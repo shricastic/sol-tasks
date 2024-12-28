@@ -14,90 +14,36 @@ export type Soltasks = {
   },
   "instructions": [
     {
-      "name": "close",
+      "name": "createTodo",
       "discriminator": [
-        98,
-        165,
-        201,
-        177,
-        108,
-        65,
-        206,
-        96
+        250,
+        161,
+        142,
+        148,
+        131,
+        48,
+        194,
+        181
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "todo",
           "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "task"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
         },
         {
-          "name": "soltasks",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "decrement",
-      "discriminator": [
-        106,
-        227,
-        168,
-        59,
-        248,
-        27,
-        150,
-        101
-      ],
-      "accounts": [
-        {
-          "name": "soltasks",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increment",
-      "discriminator": [
-        11,
-        18,
-        104,
-        9,
-        104,
-        174,
-        59,
-        33
-      ],
-      "accounts": [
-        {
-          "name": "soltasks",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "soltasks",
+          "name": "owner",
           "writable": true,
           "signer": true
         },
@@ -106,58 +52,150 @@ export type Soltasks = {
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "task",
+          "type": "string"
+        },
+        {
+          "name": "desc",
+          "type": "string"
+        }
+      ]
     },
     {
-      "name": "set",
+      "name": "deleteTodo",
       "discriminator": [
-        198,
-        51,
-        53,
-        241,
-        116,
-        29,
-        126,
-        194
+        224,
+        212,
+        234,
+        177,
+        90,
+        57,
+        219,
+        115
       ],
       "accounts": [
         {
-          "name": "soltasks",
-          "writable": true
+          "name": "todo",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "task"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "value",
-          "type": "u8"
+          "name": "task",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "updateTodo",
+      "discriminator": [
+        105,
+        8,
+        31,
+        183,
+        159,
+        73,
+        203,
+        134
+      ],
+      "accounts": [
+        {
+          "name": "todo",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "task"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "task",
+          "type": "string"
         }
       ]
     }
   ],
   "accounts": [
     {
-      "name": "soltasks",
+      "name": "todoState",
       "discriminator": [
-        255,
-        176,
-        4,
-        245,
-        188,
-        253,
-        124,
-        25
+        232,
+        39,
+        87,
+        92,
+        45,
+        186,
+        14,
+        13
       ]
     }
   ],
   "types": [
     {
-      "name": "soltasks",
+      "name": "todoState",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "count",
-            "type": "u8"
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "task",
+            "type": "string"
+          },
+          {
+            "name": "desc",
+            "type": "string"
+          },
+          {
+            "name": "done",
+            "type": "bool"
+          },
+          {
+            "name": "taskId",
+            "type": "u64"
           }
         ]
       }

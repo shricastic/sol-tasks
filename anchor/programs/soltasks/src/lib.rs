@@ -8,63 +8,92 @@ declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 pub mod soltasks {
     use super::*;
 
-  pub fn close(_ctx: Context<CloseSoltasks>) -> Result<()> {
-    Ok(())
-  }
+    pub fn create_todo(ctx: Context<CreateTodo>, task: String, desc: String) -> Result<()>{
+        let todo = &mut ctx.accounts.todo;
+        todo.owner = ctx.accounts.owner.key();
+        todo.task = task; 
+        todo.desc = desc;
+        todo.done = false;
+        todo.task_id = Clock::get()?.unix_timestamp as u64;
 
-  pub fn decrement(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.soltasks.count = ctx.accounts.soltasks.count.checked_sub(1).unwrap();
-    Ok(())
-  }
+        Ok(())
+    }
 
-  pub fn increment(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.soltasks.count = ctx.accounts.soltasks.count.checked_add(1).unwrap();
-    Ok(())
-  }
+    pub fn update_todo(ctx: Context<UpdateTodo>, _task:String) -> Result<()> {
+        let todo = &mut ctx.accounts.todo;
+        todo.done = true;
 
-  pub fn initialize(_ctx: Context<InitializeSoltasks>) -> Result<()> {
-    Ok(())
-  }
+        Ok(())
+    }
 
-  pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-    ctx.accounts.soltasks.count = value.clone();
-    Ok(())
-  }
+    pub fn delete_todo(_ctx: Context<DeleteTodo>, _task: String) -> Result<()> {
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
-pub struct InitializeSoltasks<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
+#[instruction(task: String, desc: String)]
+pub struct CreateTodo<'info> {
+    #[account(
+        init,
+        payer = owner, 
+        space = 8 + TodoState::INIT_SPACE,
+        seeds = [task.as_bytes(), owner.key().as_ref()],
+        bump
+    )]
+    pub todo: Account<'info, TodoState>,
 
-  #[account(
-  init,
-  space = 8 + Soltasks::INIT_SPACE,
-  payer = payer
-  )]
-  pub soltasks: Account<'info, Soltasks>,
-  pub system_program: Program<'info, System>,
-}
-#[derive(Accounts)]
-pub struct CloseSoltasks<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
 
-  #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
-  )]
-  pub soltasks: Account<'info, Soltasks>,
+    pub system_program: Program<'info, System>
 }
 
 #[derive(Accounts)]
-pub struct Update<'info> {
-  #[account(mut)]
-  pub soltasks: Account<'info, Soltasks>,
+#[instruction(task: String)]
+pub struct UpdateTodo<'info> {
+    #[account(
+        mut,
+        seeds = [task.as_bytes(), owner.key().as_ref()],
+        bump
+    )]
+    pub todo: Account<'info, TodoState>,
+
+    #[account(mut)]
+    pub owner: Signer<'info>,
+
+    pub system_program: Program<'info, System>
+}
+
+#[derive(Accounts)]
+#[instruction(task: String)]
+pub struct DeleteTodo<'info> {
+    #[account(
+        mut,
+        seeds = [task.as_bytes(), owner.key().as_ref()],
+        close = owner,
+        bump
+    )]
+    pub todo: Account<'info, TodoState>,
+
+    #[account(mut)]
+    pub owner: Signer<'info>,
+
+    pub system_program: Program<'info, System>
 }
 
 #[account]
 #[derive(InitSpace)]
-pub struct Soltasks {
-  count: u8,
+pub struct TodoState{
+    pub owner: Pubkey,
+
+    #[max_len(20)]
+    pub task: String,
+
+    #[max_len(100)]
+    pub desc: String,
+
+    pub done: bool,
+
+    pub task_id: u64
 }
