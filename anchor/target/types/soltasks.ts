@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/soltasks.json`.
  */
 export type Soltasks = {
-  "address": "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF",
+  "address": "9MyAxBXoj6kMv1jtfzjGGoL9RCvtNLgGbjDLPnpjXxFx",
   "metadata": {
     "name": "soltasks",
     "version": "0.1.0",
